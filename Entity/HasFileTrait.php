@@ -38,7 +38,7 @@ trait HasFileTrait
             $this->previousFile = false;
             $reflect = new \ReflectionClass($this);
             $class=$reflect->getShortName();
-            eval("\$this->file->set\$class(\$this);");
+            eval("\$this->file->set".$class."(\$this);");
             $em->persist($this->file);
             $em->flush();
         }
