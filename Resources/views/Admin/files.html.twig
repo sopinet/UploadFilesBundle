@@ -1,0 +1,36 @@
+{% extends 'SonataAdminBundle:CRUD:base_list_field.html.twig' %}
+    {% block field %}
+        {% spaceless %}
+            <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/sopinetuploadfiles/css/dropzone.css') }}" />
+            {% set maxFiles=8 %}
+            {% if object.files is not empty %}
+                <div class="dropzone dropzone-{{ object.id }}">
+                </div>
+                <script type="application/javascript">
+                    jQuery.getScript( "{{ asset('bundles/sopinetuploadfiles/js/dropzone.js') }}", function() {
+                        Dropzone.autoDiscover = false;
+                            $('.dropzone-{{ object.id }}').attr('action',"/Mercolive/web/app_dev.php/_uploader/gallery/upload");
+                            $('.dropzone-{{ object.id }}').css('pointer-events',"none");
+                            $('.dropzone-{{ object.id }}').dropzone(
+                                {
+                                    maxFiles: "{{ maxFiles }}",
+                                    addRemoveLinks: false,
+
+                                    init: function () {
+                                        {% for file in object.files %}
+
+                                            {% if file is not null and file.getPath() is not null%}
+                                                var mockFile = {name: "{{ file.name }}", size: 25000, type: 'image/jpeg', id: '{{ file.id }}'};
+                                                this.addFile.call(this, mockFile);
+                                                this.options.thumbnail.call(this, mockFile, "{{ asset(file.getPath()) }}");
+                                            {% endif %}
+                                        {%  endfor %}
+
+                                    }
+                                }
+                            );
+                        });
+                </script>
+            {% endif %}
+        {% endspaceless %}
+    {% endblock %}

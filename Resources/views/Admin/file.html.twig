@@ -1,0 +1,31 @@
+{% extends 'SonataAdminBundle:CRUD:base_list_field.html.twig' %}
+    {% block field %}
+        {% spaceless %}
+            <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/sopinetuploadfiles/css/dropzone.css') }}" />
+            {% set maxFiles=1 %}
+            {% if object.file is not null %}
+                <div class="dropzone dropzone-{{ object.file.id }}">
+                </div>
+                <script type="application/javascript">
+                    jQuery.getScript( "{{ asset('bundles/sopinetuploadfiles/js/dropzone.js') }}", function() {
+                        Dropzone.autoDiscover = false;
+                            $('.dropzone-{{ object.file.id }}').attr('action',"/Mercolive/web/app_dev.php/_uploader/gallery/upload");
+                            $('.dropzone-{{ object.file.id }}').dropzone(
+                                {
+                                    maxFiles: "{{ maxFiles }}",
+                                    addRemoveLinks: false,
+                                    init: function () {
+                                    {% if object.file is not null and object.file.getPath() is not null%}
+                                        var mockFile = {name: "{{ object.file.name }}", size: 12345, type: 'image/jpeg', id: '{{ object.file.id }}'};
+                                        this.addFile.call(this, mockFile);
+                                        this.options.thumbnail.call(this, mockFile, "{{ asset(object.file.getPath()) }}");
+                                    {% endif %}
+
+                                    }
+                                }
+                            );
+                        });
+                </script>
+            {% endif %}
+        {% endspaceless %}
+    {% endblock %}
