@@ -255,3 +255,38 @@ class OilType extends AbstractType
         ))
 ...
 ```
+
+## Using with sonata
+
+1. Using for one-to-one relationship, add to your config:
+```
+//app/config/config.yml
+...
+sonata_doctrine_orm_admin:
+    templates:
+        types:
+            list:
+                ...
+                dropzone_file_gallery:   SopinetUploadFilesBundle:Admin:file.html.twig
+            show:
+                ...
+                dropzone_file_gallery:   SopinetUploadFilesBundle:Admin:file.html.twig
+...
+```
+then use as in forms
+
+2. Using for one-to-many relationship, on add set a custom template for field
+```
+//AppBundle/Admin/AcmeEntityAdmin.php
+...
+    /**
+     * @param ListMapper $listMapper
+     */
+    protected function configureListFields(ListMapper $listMapper)
+    {
+
+        $listMapper ->add('files', 'dropzone',array('template'=>'SopinetUploadFilesBundle:Admin:files.html.twig'));
+
+    }
+...
+```
