@@ -12,6 +12,7 @@
    }
   ```
 2. Add to your AppKernel.php file
+3. 
   ```
   //app/AppKernel.php
   $bundles = array(
@@ -25,6 +26,7 @@
   2. And Using the Orphanage configuration(for now configure the mappings as gallery) :
 https://github.com/1up-lab/OneupUploaderBundle/blob/master/Resources/doc/orphanage.md
 4. Add the form type to your config:
+5. 
     ```
   //app/config/config.yml
   ...
