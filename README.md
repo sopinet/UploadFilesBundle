@@ -36,7 +36,16 @@ https://github.com/1up-lab/OneupUploaderBundle/blob/master/Resources/doc/orphana
             - 'SopinetUploadFilesBundle:Form:file.html.twig'
   ...
   ```
-5. Create your File entity, something like this:
+5. Add the routing to your routing.yml:
+
+    ```
+  //app/config/routing.yml
+  ...
+  sopinet_uploadfiles:
+      resource: @SopinetUploadFilesBundle/Resources/config/routing.yml
+  ...
+  ```
+6. Create your File entity, something like this:
 ```
 <?php
 /**
