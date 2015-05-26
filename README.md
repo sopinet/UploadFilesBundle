@@ -18,6 +18,7 @@
   $bundles = array(
     ....
     new Sopinet\UploadFilesBundle\SopinetUploadFilesBundle(),
+    new Oneup\UploaderBundle\OneupUploaderBundle(),
     ....
    )
   ```
@@ -168,7 +169,7 @@ class File
 }
 ```
 ## Usage
-* Create your relationships between your project entities and your new entity field:
+* Create your relationships between your project entities and your new entity field(respect the owning side for lifecicle callbacks):
 ```
 /**
  * @ORM\Entity
@@ -183,6 +184,13 @@ class File
      * @ORM\OneToOne(targetEntity="Application\Sopinet\UserBundle\Entity\User", mappedBy="file")
      */
     protected $user;
+    
+        /**
+     * @ORM\ManyToOne(targetEntity="Oil", inversedBy="files")
+     * @ORM\JoinColumn(name="oil_id", referencedColumnName="id")
+     */
+    protected $oil;
+
     ...
 }
 
@@ -200,7 +208,28 @@ class User extends BaseUser
      * @ORM\OneToOne(targetEntity="AppBundle\Entity\File", inversedBy="user")
      */
     protected $file;
+  
  ...
+}
+
+//src/AppBundle/Entity/Oil.php
+use Sopinet\UploadFilesBundle\Entity\HasFilesTrait;
+/**
+ * Oil
+ *
+ * @ORM\Table()
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\OilRepository")
+ * @ORM\HasLifecycleCallbacks
+ */
+class Oil
+{
+    use HasFilesTrait;
+    ...
+        /**
+     * @ORM\OneToMany(targetEntity="File", mappedBy="oil", cascade={"persist"})
+     */
+    protected $files;
+    ...
 }
 ```
 
@@ -219,7 +248,7 @@ class User extends BaseUser
  ...
      use HasFileTrait;
      /**
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\File", inversedBy="user")
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\File", mappedBy="user")
      */
     protected $file;
  ...
@@ -239,7 +268,7 @@ class Oil
     use HasFilesTrait;
     ...
         /**
-     * @ORM\OneToMany(targetEntity="File", mappedBy="oil",orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="File", mappedBy="oil", cascade={"persist"})
      */
     protected $files;
     ...
