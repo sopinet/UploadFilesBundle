@@ -169,7 +169,7 @@ class File
 }
 ```
 ## Usage
-* Create your relationships between your project entities and your new entity field(respect the owning side for lifecicle callbacks):
+* Create your relationships between your project entities and your new entity field(respect the owning side for lifecicle callbacks and cascade):
 ```
 /**
  * @ORM\Entity
