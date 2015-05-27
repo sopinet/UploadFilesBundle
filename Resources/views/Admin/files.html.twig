@@ -9,7 +9,7 @@
                 <script type="application/javascript">
                     jQuery.getScript( "{{ asset('bundles/sopinetuploadfiles/js/dropzone.js') }}", function() {
                         Dropzone.autoDiscover = false;
-                            $('.dropzone-{{ object.id }}').attr('action',"/Mercolive/web/app_dev.php/_uploader/gallery/upload");
+                            $('.dropzone-{{ object.id }}').attr('action',"{{ oneup_uploader_endpoint("gallery") }}");
                             $('.dropzone-{{ object.id }}').css('pointer-events',"none");
                             $('.dropzone-{{ object.id }}').dropzone(
                                 {

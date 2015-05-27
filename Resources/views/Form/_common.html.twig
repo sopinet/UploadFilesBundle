@@ -1,0 +1,52 @@
+{{ sopinet_file_upload_cache_clear() }}
+<link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/sopinetuploadfiles/css/dropzone.css') }}" />
+{% if maxFiles is defined %}
+    <script type="application/javascript">
+        jQuery.getScript( "{{ asset('bundles/sopinetuploadfiles/js/dropzone.js') }}", function() {
+            Dropzone.autoDiscover = false;
+            $('.dropzone').dropzone(
+                    {
+                        maxFiles: "{{ maxFiles }}",
+                        addRemoveLinks: true,
+                        init: function () {
+                            {% if form.parent.vars.value.file is defined and form.parent.vars.value.file is not null%}
+                            {{ sopinet_file_upload_load_on_cache(form.parent.vars.value.file) }}
+                            var mockFile = {name: "{{ form.parent.vars.value.file.name }}", size: 12345, type: 'image/jpeg', id: '{{ form.parent.vars.value.file.id }}'};
+                            this.addFile.call(this, mockFile);
+                            this.options.thumbnail.call(this, mockFile, "{{ asset(form.parent.vars.value.file.path) }}");
+                            this.files[this.files.length-1].removeName="{{ form.parent.vars.value.file.name }}";
+                            {% elseif form.parent.vars.value.files is defined %}
+                            {% for file in form.parent.vars.value.files %}
+                            {{ sopinet_file_upload_load_on_cache(file) }}
+                            var mockFile = {name: "{{ file.name }}", size: 12345, type: 'image/jpeg' , id: '{{ file.id }}'};
+                            this.addFile.call(this, mockFile);
+                            this.options.thumbnail.call(this, mockFile, "{{ asset(file.path) }}");
+                            this.files[this.files.length-1].removeName="{{ file.name }}";
+                            {% endfor %}
+                            {% endif %}
+                            {% if maxFiles == 1 %}
+                            this.on("addedfile", function (file) {
+                                if (this.files[1] != null) {
+                                    this.removeFile(this.files[0]);
+                                }
+                                var date=new Date();
+                                this.files[this.files.length-1].removeName=Math.floor(date.getTime()/1000)+'.'+file.name.split('.').pop();
+                            });
+                            {% else %}
+                            this.on("addedfile", function (file) {
+                                if (this.files[{{ maxFiles }}] != null) {
+                                    this.removeFile(this.files[0]);
+                                }
+                                var date=new Date()
+                                file.name=Math.floor(date.getTime()/10000);
+                            });
+                            {% endif %}
+                            this.on("removedfile", function(file){
+                                $.post('{{ path('sopinet_upload_files_delete') }}',{ deleteName: file.removeName});
+                            })
+                        }
+                    }
+            );
+        });
+    </script>
+{% endif %}

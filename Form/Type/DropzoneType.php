@@ -53,7 +53,8 @@ class DropzoneType extends AbstractType
                 'action' => $this->uploaderHelper->endpoint('gallery'),
                 'class' => 'dropzone'
             ),
-            'maxFiles' => 8
+            'maxFiles' => 8,
+            'type' => 'form_widget'
         ));
     }
 
@@ -68,6 +69,9 @@ class DropzoneType extends AbstractType
     {
         if (array_key_exists('maxFiles', $options)) {
             $view->vars['maxFiles'] = $options['maxFiles'];
+        }
+        if (array_key_exists('type', $options)) {
+            $view->vars['type'] = $options['type'];
         }
     }
 
