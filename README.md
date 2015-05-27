@@ -357,8 +357,12 @@ then use as in forms
      */
     protected function configureListFields(ListMapper $listMapper)
     {
-
-        $listMapper ->add('files', 'dropzone',array('template'=>'SopinetUploadFilesBundle:Admin:files.html.twig'));
+        //...
+        $listMapper
+        ->add('files', 'dropzone_file_gallery', array(
+            'template' => 'SopinetUploadFilesBundle:Admin:file_list.html.twig'
+            )
+        )
 
     }
 ...

@@ -1,0 +1,10 @@
+{% extends 'SonataAdminBundle:CRUD:base_list_field.html.twig' %}
+    {% block field %}
+        {% spaceless %}
+            <div class="pull-left span1">
+                {% if admin.isGranted('EDIT', object) and admin.hasRoute('edit') %}
+                    <img src="{{ asset(object.file.path) }}">
+                {% endif %}
+            </div>
+        {% endspaceless %}
+    {% endblock %}
