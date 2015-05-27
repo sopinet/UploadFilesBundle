@@ -8,6 +8,7 @@
                     {
                         maxFiles: "{{ maxFiles }}",
                         addRemoveLinks: true,
+                        dictDefaultMessage: "{{ uploaderText }}",
                         init: function () {
                             {% if form.parent.vars.value.file is defined and form.parent.vars.value.file is not null%}
                             {{ sopinet_file_upload_load_on_cache(form.parent.vars.value.file) }}

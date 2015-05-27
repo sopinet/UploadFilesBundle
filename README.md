@@ -310,7 +310,8 @@ class OilType extends AbstractType
         ->add('files', 'dropzone_file_gallery', array(
           'maxFiles'=> 4,//default 8
           'required' => false,
-          'type' => my_custom
+          'type' => my_custom,
+          'uploaderText' => 'your_custom_text',
         ))
         
 //src/AppBundle/Resources/path_to/_template
