@@ -18,6 +18,7 @@
   $bundles = array(
     ....
     new Sopinet\UploadFilesBundle\SopinetUploadFilesBundle(),
+    new Oneup\UploaderBundle\OneupUploaderBundle(),
     ....
    )
   ```
@@ -36,7 +37,16 @@ https://github.com/1up-lab/OneupUploaderBundle/blob/master/Resources/doc/orphana
             - 'SopinetUploadFilesBundle:Form:file.html.twig'
   ...
   ```
-5. Create your File entity, something like this:
+5. Add the routing to your routing.yml:
+
+    ```
+  //app/config/routing.yml
+  ...
+  sopinet_uploadfiles:
+      resource: @SopinetUploadFilesBundle/Resources/config/routing.yml
+  ...
+  ```
+6. Create your File entity, something like this:
 ```
 <?php
 /**
@@ -159,7 +169,7 @@ class File
 }
 ```
 ## Usage
-* Create your relationships between your project entities and your new entity field:
+* Create your relationships between your project entities and your new entity field(respect the owning side for lifecicle callbacks and cascade):
 ```
 /**
  * @ORM\Entity
@@ -174,6 +184,13 @@ class File
      * @ORM\OneToOne(targetEntity="Application\Sopinet\UserBundle\Entity\User", mappedBy="file")
      */
     protected $user;
+    
+        /**
+     * @ORM\ManyToOne(targetEntity="Oil", inversedBy="files")
+     * @ORM\JoinColumn(name="oil_id", referencedColumnName="id")
+     */
+    protected $oil;
+
     ...
 }
 
@@ -191,7 +208,28 @@ class User extends BaseUser
      * @ORM\OneToOne(targetEntity="AppBundle\Entity\File", inversedBy="user")
      */
     protected $file;
+  
  ...
+}
+
+//src/AppBundle/Entity/Oil.php
+use Sopinet\UploadFilesBundle\Entity\HasFilesTrait;
+/**
+ * Oil
+ *
+ * @ORM\Table()
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\OilRepository")
+ * @ORM\HasLifecycleCallbacks
+ */
+class Oil
+{
+    use HasFilesTrait;
+    ...
+        /**
+     * @ORM\OneToMany(targetEntity="File", mappedBy="oil", cascade={"persist"})
+     */
+    protected $files;
+    ...
 }
 ```
 
@@ -210,7 +248,7 @@ class User extends BaseUser
  ...
      use HasFileTrait;
      /**
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\File", inversedBy="user")
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\File", mappedBy="user")
      */
     protected $file;
  ...
@@ -230,7 +268,7 @@ class Oil
     use HasFilesTrait;
     ...
         /**
-     * @ORM\OneToMany(targetEntity="File", mappedBy="oil",orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="File", mappedBy="oil", cascade={"persist"})
      */
     protected $files;
     ...
@@ -254,6 +292,16 @@ class OilType extends AbstractType
           'required' => false
         ))
 ...
+```
+
+* If you want to use another style or template for dropbox you can overwrite the field style as follow:
+```
+//src/AppBundle/Resources/path_to/_template
+{% extends 'form_div_layout.html.twig' %}
+
+{% block dropzone_file_gallery_widget %}
+  ... //Here goes your new dropzone file template
+{% endblock %}
 ```
 
 ## Using with sonata
