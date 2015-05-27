@@ -131,7 +131,7 @@ class File
             ? null
             : $this->getUploadDir().'/'.$this->path;
     }
-
+re
     public function getFrontPath()
     {
         return null === $this->path
@@ -294,14 +294,39 @@ class OilType extends AbstractType
 ...
 ```
 
-* If you want to use another style or template for dropbox you can overwrite the field style as follow:
+* If you want to use another style or template for dropbox you can overwrite the field style as follow(this example render dropbox with default aspect):
 ```
+//src/AppBundle/Form/OilType.php
+...
+class OilType extends AbstractType
+{
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+      $builder
+        ->add('files', 'dropzone_file_gallery', array(
+          'maxFiles'=> 4,//default 8
+          'required' => false,
+          'type' => my_custom
+        ))
+        
 //src/AppBundle/Resources/path_to/_template
-{% extends 'form_div_layout.html.twig' %}
-
-{% block dropzone_file_gallery_widget %}
-  ... //Here goes your new dropzone file template
+{% form_theme oil_form _self %}
+{% block my_custom %}
+    <div class="modal-body">
+        <div {{ block('widget_container_attributes') }}>
+            {%- if form.parent is empty -%}
+                {{ form_errors(form) }}
+            {%- endif -%}
+            {{- block('form_rows') -}}
+            {{- form_rest(form) -}}
+        </div>
+    </div>
 {% endblock %}
+
 ```
 
 ## Using with sonata
