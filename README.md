@@ -294,6 +294,16 @@ class OilType extends AbstractType
 ...
 ```
 
+* If you want to use another style or template for dropbox you can overwrite the field style as follow:
+```
+//src/AppBundle/Resources/path_to/_template
+{% extends 'form_div_layout.html.twig' %}
+
+{% block dropzone_file_gallery_widget %}
+  ... //Here goes your new dropzone file template
+{% endblock %}
+```
+
 ## Using with sonata
 
 1. Using for one-to-one relationship, add to your config:
