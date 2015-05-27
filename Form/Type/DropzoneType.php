@@ -54,7 +54,9 @@ class DropzoneType extends AbstractType
                 'class' => 'dropzone'
             ),
             'maxFiles' => 8,
-            'type' => 'form_widget'
+            'type' => 'form_widget',
+            'btnClass'=>'btn btn-info btn-lg',
+            'btnText'=>'Files'
         ));
     }
 
@@ -72,6 +74,12 @@ class DropzoneType extends AbstractType
         }
         if (array_key_exists('type', $options)) {
             $view->vars['type'] = $options['type'];
+        }
+        if (array_key_exists('btnClass', $options)) {
+            $view->vars['btnClass'] = $options['btnClass'];
+        }
+        if (array_key_exists('btnText', $options)) {
+            $view->vars['btnText'] = $options['btnText'];
         }
     }
 

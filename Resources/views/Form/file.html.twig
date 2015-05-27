@@ -2,7 +2,9 @@
 
     {% block modal %}
         <!-- Trigger the modal with a button -->
-        <button type="button" class="{{ btnClass|default('btn btn-info btn-lg') }}" data-toggle="modal" data-target="#{{ id }}_modal">{{ btnText|default('Files') }}</button>
+        {% block modal_buton %}
+            <button type="button" class="{{ btnClass }}" data-toggle="modal" data-target="#{{ id }}_modal">{{ btnText }}</button>
+        {% endblock %}
         <!-- Modal -->
         <div id="{{ id }}_modal" class="modal fade" role="dialog">
             <div class="modal-dialog">
