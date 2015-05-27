@@ -58,6 +58,7 @@ class DropzoneType extends AbstractType
             'btnClass' => 'btn btn-info btn-lg',
             'btnText' => 'Files',
             'uploaderText' => 'Drop files here to upload',
+            'style_type' => 'style_default'
         ));
     }
 
@@ -85,6 +86,16 @@ class DropzoneType extends AbstractType
         if (array_key_exists('uploaderText', $options)) {
             $view->vars['uploaderText'] = $options['uploaderText'];
         }
+        if (array_key_exists('attr', $options)) {
+            $view->vars['attr'] = $options['attr'];
+            if (!isset($view->vars['attr']['action'])) {
+                $view->vars['attr']['action'] = $this->uploaderHelper->endpoint('gallery');
+            }
+        }
+        if (array_key_exists('style_type', $options)) {
+            $view->vars['style_type'] = $options['style_type'];
+        }
+
     }
 
     public function getName()

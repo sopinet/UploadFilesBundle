@@ -1,5 +1,24 @@
 {% extends 'form_div_layout.html.twig' %}
 
+{#STYLE BLOCKS#}
+    {% block style_default %}
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/sopinetuploadfiles/css/dropzone.css') }}" />
+    {% endblock %}
+    {% block style_icon %}
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/sopinetuploadfiles/css/dropzone.css') }}" />
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/sopinetuploadfiles/css/iconic.css') }}" />
+    {% endblock %}
+{# TYPE BLOCKS#}
+    {% block icon %}
+        <i {{ block('widget_container_attributes') }}>
+            {%- if form.parent is empty -%}
+                {{ form_errors(form) }}
+            {%- endif -%}
+            {{- block('form_rows') -}}
+            {{- form_rest(form) -}}
+        </i>
+    {% endblock %}
+
     {% block modal %}
         <!-- Trigger the modal with a button -->
         {% block modal_buton %}
@@ -34,8 +53,13 @@
         </div>
     {% endblock %}
 
+
+
+
+{# WIDGET COMPOSITION#}
     {% block dropzone_file_gallery_widget %}
         {% spaceless %}
+            {{ block(style_type) }}
             {% include '@SopinetUploadFiles/Form/_common.html.twig' %}
             {{ block(type) }}
         {% endspaceless %}

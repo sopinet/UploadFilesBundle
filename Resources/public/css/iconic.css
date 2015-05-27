@@ -1,0 +1,27 @@
+.dropzone {
+    border: none;
+    background: none;  }
+
+.dropzone .dz-preview{
+    margin: 0 0 0 39.66666667%;
+}
+
+.dz-message>span::before{
+    display:inline-block;font:normal normal normal 80px/1 FontAwesome;font-size:inherit;text-rendering:auto;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+    content:"\f055";
+    font-size: 100px;
+    color: #008000;
+}
+
+.dropzone .dz-preview .dz-image{
+    border-radius: 50%;
+}
+
+.dropzone .dz-message{
+    text-align: inherit;
+    margin: 0 0 0 43.66666667%;
+}
+
+.dropzone .dz-preview.dz-image-preview{
+    background: none;
+}
