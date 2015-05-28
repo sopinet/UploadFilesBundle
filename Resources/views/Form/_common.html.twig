@@ -30,7 +30,7 @@
                                     this.removeFile(this.files[0]);
                                 }
                                 var date=new Date();
-                                this.files[this.files.length-1].removeName=Math.floor(date.getTime()/1000)+'.'+file.name.split('.').pop();
+                                this.files[this.files.length-1].removeName=Math.floor(date.getTime()/10000)+'.'+file.name.split('.').pop();
                             });
                             {% else %}
                             this.on("addedfile", function (file) {

@@ -12,6 +12,6 @@ class FileNamer implements NamerInterface
     {
         $date = new \DateTime();
 
-        return (floor($date->getTimestamp())).'.'.$file->getExtension();
+        return (floor($date->getTimestamp()/10)).'.'.$file->getExtension();
     }
 }
