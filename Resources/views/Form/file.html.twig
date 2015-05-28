@@ -1,12 +1,21 @@
 {% extends 'form_div_layout.html.twig' %}
 
 {#STYLE BLOCKS#}
+{#STYLE BLOCKS#}
     {% block style_default %}
-        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/sopinetuploadfiles/css/dropzone.css') }}" />
+        {% stylesheets
+        '@SopinetUploadFilesBundle/Resources/public/css/dropzone.css'
+        output='css/*.css' filter='cssrewrite' %}
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}" />
+        {% endstylesheets %}
     {% endblock %}
     {% block style_icon %}
-        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/sopinetuploadfiles/css/dropzone.css') }}" />
-        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/sopinetuploadfiles/css/iconic.css') }}" />
+        {% stylesheets
+        '@SopinetUploadFilesBundle/Resources/public/css/dropzone.css'
+        '@SopinetUploadFilesBundle/Resources/public/css/iconic.css'
+        output='css/*.css' filter='cssrewrite' %}
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}" />
+        {% endstylesheets %}
     {% endblock %}
 {# TYPE BLOCKS#}
     {% block icon %}
