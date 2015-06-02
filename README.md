@@ -26,7 +26,7 @@
   1. with basic configuration: https://github.com/1up-lab/OneupUploaderBundle/blob/master/Resources/doc/index.md#step-3-configure-the-bundle
   2. And Using the Orphanage configuration(for now configure the mappings as gallery) :
 https://github.com/1up-lab/OneupUploaderBundle/blob/master/Resources/doc/orphanage.md
-4. Add the form type to your config:
+4. Add the form type to your config, and this bundle to assetics config:
 
     ```
   //app/config/config.yml
@@ -35,6 +35,8 @@ https://github.com/1up-lab/OneupUploaderBundle/blob/master/Resources/doc/orphana
     form:
         resources:
             - 'SopinetUploadFilesBundle:Form:file.html.twig'
+  assetic:
+      bundles: [ SopinetUploadFilesBundle ]
   ...
   ```
 5. Add the routing to your routing.yml:
