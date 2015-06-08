@@ -42,6 +42,7 @@ trait HasFilesTrait
             foreach ($this->files as $file) {
                 eval("\$file->set".$class."(\$this);");
                 $em->persist($file);
+                $em->flush($file);
             }
         }
         eval("\$files = \$em->getRepository('AppBundle:File')->findBy".$class."(\$this);");
@@ -54,7 +55,6 @@ trait HasFilesTrait
                 }
             }
         }
-        $em->flush();
         $this->previousFiles = false;
     }
 
