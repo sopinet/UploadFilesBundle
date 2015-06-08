@@ -50,11 +50,14 @@ trait HasFilesTrait
             foreach ($files as $file) {
                 if ($this->files==null) {
                     $em->remove($file);
+                    $em->flush($file);
                 } elseif(!in_array($file, $this->files->toArray())) {
                     $em->remove($file);
+                    $em->flush($file);
                 }
             }
         }
+
         $this->previousFiles = false;
     }
 
@@ -68,5 +71,23 @@ trait HasFilesTrait
         }
 
         return $this;
+    }
+
+    /**
+     * Funcion que añade las entidades de tipo file cuando se crea
+     * @param LifecycleEventArgs $event
+     *
+     * @ORM\PostPersist
+     */
+    public function addNewFiles(LifecycleEventArgs $event)
+    {
+        $em = $event->getEntityManager();
+        $reflect = new \ReflectionClass($this);
+        $class=$reflect->getShortName();
+        foreach ($this->getFiles() as $file) {
+            eval("\$file->set".$class."(\$this);");
+            $em->persist($file);
+            $em->flush($file);
+        }
     }
 }

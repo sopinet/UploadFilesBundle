@@ -34,13 +34,37 @@ trait HasFileTrait
     {
         if (!empty($this->previousFile)) {
             $em = $event->getEntityManager();
-            $em->remove($this->previousFile);
-            $this->previousFile = false;
             $reflect = new \ReflectionClass($this);
             $class=$reflect->getShortName();
+            $files= null;
+            eval("\$files = \$em->getRepository('AppBundle:File')->findBy".$class."(\$this);");
+            if ($files!=null) {
+                foreach ($files as $file) {
+                    if ($this->file!=$file) {
+                        $em->remove($file);
+                        $em->flush($file);
+                    }
+                }
+            }
             eval("\$this->file->set".$class."(\$this);");
             $em->persist($this->file);
-            $em->flush();
+            $em->flush($this->file);
         }
+    }
+
+    /**
+     * Funcion que añade la entidad de tipo file cuando se crea
+     * @param LifecycleEventArgs $event
+     *
+     * @ORM\PostPersist
+     */
+    public function addNewFile(LifecycleEventArgs $event)
+    {
+        $em = $event->getEntityManager();
+        $reflect = new \ReflectionClass($this);
+        $class=$reflect->getShortName();
+        eval("\$this->file->set".$class."(\$this);");
+        $em->persist($this->file);
+        $em->flush($this->file);
     }
 }
