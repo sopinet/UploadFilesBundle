@@ -60,11 +60,14 @@ trait HasFileTrait
      */
     public function addNewFile(LifecycleEventArgs $event)
     {
-        $em = $event->getEntityManager();
-        $reflect = new \ReflectionClass($this);
-        $class=$reflect->getShortName();
-        eval("\$this->file->set".$class."(\$this);");
-        $em->persist($this->file);
-        $em->flush($this->file);
+        if ($this->file != null){
+            $em = $event->getEntityManager();
+            $reflect = new \ReflectionClass($this);
+            $class=$reflect->getShortName();
+            eval("\$this->file->set".$class."(\$this);");
+            $em->persist($this->file);
+            $em->flush($this->file);
+
+        }
     }
 }
