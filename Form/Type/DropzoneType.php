@@ -59,7 +59,7 @@ class DropzoneType extends AbstractType
             'btnText' => 'Files',
             'uploaderText' => 'Drop files here to upload',
             'style_type' => 'style_default',
-            'acceptedFiles' => 'images/*'
+            'acceptedFiles' => ".jpeg,.jpg,.png,.gif,.JPEG,.JPG,.PNG,.GIF"
         ));
     }
 

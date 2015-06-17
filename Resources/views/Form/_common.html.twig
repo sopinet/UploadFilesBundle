@@ -5,7 +5,7 @@
             Dropzone.autoDiscover = false;
             $('.dropzone').dropzone(
                     {
-                        acceptedFiles: "{{ acceptedFiles|default('image/*') }}",//"audio/*,image/*,.psd,.pdf"
+                        acceptedFiles: "{{ acceptedFiles|default('.jpeg,.jpg,.png,.gif,.JPEG,.JPG,.PNG,.GIF') }}",//"audio/*,image/*,.psd,.pdf"
                         maxFiles: "{{ maxFiles }}",
                         addRemoveLinks: true,
                         dictDefaultMessage: "{{ uploaderText }}",
