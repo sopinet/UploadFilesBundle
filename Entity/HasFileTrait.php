@@ -70,4 +70,20 @@ trait HasFileTrait
 
         }
     }
+
+
+    /**
+     * @param LifecycleEventArgs $event
+     *
+     * @ORM\PreRemove
+     */
+    public function removeFile(LifecycleEventArgs $event)
+    {
+        if ($this->file != null) {
+            $em = $event->getEntityManager();
+            $em->remove($this->file);
+            $this->file=null;
+            $em->flush($this->file);
+        }
+    }
 }
