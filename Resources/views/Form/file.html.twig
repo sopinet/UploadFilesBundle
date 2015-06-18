@@ -1,7 +1,7 @@
 {% extends 'form_div_layout.html.twig' %}
 
 {#STYLE BLOCKS#}
-{#STYLE BLOCKS#}
+
     {% block style_default %}
         {% stylesheets
         '@SopinetUploadFilesBundle/Resources/public/css/dropzone.css'
@@ -9,6 +9,7 @@
         <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}" />
         {% endstylesheets %}
     {% endblock %}
+
     {% block style_icon %}
         {% stylesheets
         '@SopinetUploadFilesBundle/Resources/public/css/dropzone.css'
@@ -17,6 +18,10 @@
         <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}" />
         {% endstylesheets %}
     {% endblock %}
+
+    {% block style_none %}
+    {% endblock %}
+
 {# TYPE BLOCKS#}
     {% block icon %}
         <i {{ block('widget_container_attributes') }}>
@@ -62,8 +67,24 @@
         </div>
     {% endblock %}
 
-
-
+    {% block pdf_preview %}
+        {% if form.parent.vars.value.file is defined and form.parent.vars.value.file is not null%}
+            <object data="{{ asset(form.parent.vars.value.file.path) }}" type="application/pdf" {{ block('widget_attributes') }} >
+                <embed src="{{ asset(form.parent.vars.value.file.path) }}" type="application/pdf">&nbsp; </embed>
+                    {# Alternativa para navegadores no compatibles con objetos .pdf se utilizan los servicios de google doc#}
+                    alt :<iframe src="http://docs.google.com/gview?url={{ asset(form.parent.vars.value.file.path,null,true) }}&embedded=true"
+                {{ block('widget_attributes') }}  frameborder="0"></iframe>
+            </object>
+        {% elseif form.parent.vars.value.files is defined %}
+            {% for file in form.parent.vars.value.files %}
+                <object data="{{ asset(form.parent.vars.value.file.path) }}" type="application/pdf" {{ block('widget_attributes') }} >
+                    <embed src="{{ asset(form.parent.vars.value.file.path) }}" type="application/pdf">&nbsp; </embed>
+                    {# Alternativa para navegadores no compatibles con objetos .pdf se utilizan los servicios de google doc#}
+                    alt :<iframe src="http://docs.google.com/gview?url={{ asset(form.parent.vars.value.file.path,null,true) }}&embedded=true"
+                    {{ block('widget_attributes') }} frameborder="0"></iframe>
+            {% endfor %}
+        {% endif %}
+    {% endblock %}
 
 {# WIDGET COMPOSITION#}
     {% block dropzone_file_gallery_widget %}

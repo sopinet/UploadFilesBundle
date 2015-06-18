@@ -370,3 +370,18 @@ then use as in forms
     }
 ...
 ```
+
+
+
+## Types and styles added already on bundle
+
+1. Types:
+    
+    modal: replace dropbox box with button for display a modal with dropbox box inside
+    pdf_preview: replace dropbox with a pdf preview(previews for multiples files), recommend use with style_none.
+
+2. Styles:
+
+    style_default: just the regular dropbox style
+    style_iconic: replace the dropbox box with a + icon
+    style_none: non style
