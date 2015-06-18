@@ -370,7 +370,35 @@ then use as in forms
     }
 ...
 ```
+if you want to customize sonata render you can create your own block as follow
 
+```
+//AppBundle/Admin/AcmeEntityAdmin.php
+...
+    public $fileUploadType='myblockName';
+    /**
+     * @param ListMapper $listMapper
+     */
+    protected function configureListFields(ListMapper $listMapper)
+    {
+        //...
+        $listMapper
+        ->add('file', 'dropzone_file_gallery', array(
+            'template' => 'SopinetUploadFilesBundle:Admin:file.html.twig'
+            )
+        )
+
+    }
+...
+//mytemplate.twig
+...
+{% block sonata_uploadfile_myblockName %}
+    //your custom preview template here
+{% endblock %
+...
+```
+ 
+ 
 
 
 ## Types and styles added already on bundle
@@ -385,3 +413,16 @@ then use as in forms
     style_default: just the regular dropbox style
     style_iconic: replace the dropbox box with a + icon
     style_none: non style
+    
+3. Types sonata preview:
+
+    pdf: same as pdf preview only work with one to one entity to file relationship
+    to use add
+    ```
+    //AppBundle/Admin/AcmeEntityAdmin.php
+    ...
+        public $yourFieldNameUploadType='pdf';
+    ...
+
+    ```
+    
