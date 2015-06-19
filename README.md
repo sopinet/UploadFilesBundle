@@ -422,6 +422,6 @@ if you want to customize sonata render you can create your own block as follow
     ...
         public $yourFieldNameUploadType='pdf';
     ...
-
+    
     ```
     
