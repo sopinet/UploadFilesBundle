@@ -119,7 +119,6 @@ class File
         return $this;
     }
 
-
     public function getAbsolutePath()
     {
         return null === $this->path
@@ -133,7 +132,7 @@ class File
             ? null
             : $this->getUploadDir().'/'.$this->path;
     }
-re
+
     public function getFrontPath()
     {
         return null === $this->path
