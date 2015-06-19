@@ -400,7 +400,6 @@ if you want to customize sonata render you can create your own block as follow
  
  
 
-
 ## Types and styles added already on bundle
 
 1. Types:
