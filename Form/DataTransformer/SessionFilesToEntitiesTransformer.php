@@ -72,7 +72,7 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
         if (count($images)==0) {
             return null;
         } else if (count($images)==1) {
-            $file=$this->om->getRepository('AppBundle:File')->findByPath('uploads/gallery/'.$images[0]->getFilename());
+            $file=$this->om->getRepository('AppBundle:File')->findOneByPath('uploads/gallery/'.$images[0]->getFilename());
             if( $file == null){
                 $file = new File();
 
