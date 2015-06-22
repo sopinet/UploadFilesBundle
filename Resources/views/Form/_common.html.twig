@@ -14,40 +14,47 @@
                         init: function () {
                             {# Añadimos el fichero en caso de ser solo uno #}
                             {% if form.parent.vars.value.file is defined and form.parent.vars.value.file is not null%}
-                                {{ sopinet_file_upload_load_on_cache(form.parent.vars.value.file) }}
-                                var mockFile = {name: "{{ form.parent.vars.value.file.name }}", size: 12345, type: 'image/jpeg', id: '{{ form.parent.vars.value.file.id }}'};
-                                this.addFile.call(this, mockFile);
-                                this.options.thumbnail.call(this, mockFile, "{{ asset(form.parent.vars.value.file.path) }}");
-                                this.files[this.files.length-1].removeName="{{ form.parent.vars.value.file.name }}";
+                            {{ sopinet_file_upload_load_on_cache(form.parent.vars.value.file) }}
+                            var mockFile = {name: "{{ form.parent.vars.value.file.name }}", size: 12345, type: 'image/jpeg', id: '{{ form.parent.vars.value.file.id }}'};
+                            this.addFile.call(this, mockFile);
+                            this.options.thumbnail.call(this, mockFile, "{{ asset(form.parent.vars.value.file.path) }}");
+                            this.files[this.files.length-1].removeName="{{ form.parent.vars.value.file.name }}";
                             {# Añadimos los ficheros #}
                             {% elseif form.parent.vars.value.files is defined %}
-                                {% for file in form.parent.vars.value.files %}
-                                    {{ sopinet_file_upload_load_on_cache(file) }}
-                                    var mockFile = {name: "{{ file.name }}", size: 12345, type: 'image/jpeg' , id: '{{ file.id }}'};
-                                    this.addFile.call(this, mockFile);
-                                    this.options.thumbnail.call(this, mockFile, "{{ asset(file.path) }}");
-                                    {# Guardamos sus nombres para la peticion de borrado #}
-                                    this.files[this.files.length-1].removeName="{{ file.name }}";
-                                {% endfor %}
+                            {% for file in form.parent.vars.value.files %}
+                            {{ sopinet_file_upload_load_on_cache(file) }}
+                            var mockFile = {name: "{{ file.name }}", size: 12345, type: 'image/jpeg' , id: '{{ file.id }}'};
+                            this.addFile.call(this, mockFile);
+                            this.options.thumbnail.call(this, mockFile, "{{ asset(file.path) }}");
+                            {# Guardamos sus nombres para la peticion de borrado #}
+                            this.files[this.files.length-1].removeName="{{ file.name }}";
+                            {% endfor %}
                             {% endif %}
                             {# definimos la funcion que guarda el nombre de borrado de un fichero cuando se añade #}
                             {% if maxFiles == 1 %}
-                                this.on("addedfile", function (file) {
-                                    if (this.files[1] != null) {
-                                        this.removeFile(this.files[0]);
-                                    }
-                                    var date=new Date();
-                                    this.files[this.files.length-1].removeName=Math.floor(date.getTime()/10000)+'.'+file.name.split('.').pop();
-                                });
+                            this.on("addedfile", function (file) {
+                                if (this.files[1] != null) {
+                                    this.removeFile(this.files[0]);
+                                }
+                                var date=new Date();
+                                this.files[this.files.length-1].removeName=uniqueId;
+                            });
                             {% else %}
-                                this.on("addedfile", function (file) {
-                                    if (this.files[{{ maxFiles }}] != null) {
-                                        this.removeFile(this.files[0]);
-                                    }
-                                    var date=new Date()
-                                    file.name=Math.floor(date.getTime()/10000);
-                                });
+                            this.on("addedfile", function (file) {
+                                if (this.files[{{ maxFiles }}] != null) {
+                                    this.removeFile(this.files[0]);
+                                }
+                                var date=new Date()
+                                file.name=uniqueId;
+                            });
                             {% endif %}
+                            this.on("sending", function(file, request, formData) {
+                                uniqueId=Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1)+'.'+file.name.split('.').pop();
+                                file.name=uniqueId;
+                                file.removeName=uniqueId;
+                                formData.append('uniqueFileName',uniqueId);
+
+                            });
                             {# Funcion de borrado #}
                             this.on("removedfile", function(file){
                                 $.post('{{ path('sopinet_upload_files_delete') }}',{ deleteName: file.removeName});

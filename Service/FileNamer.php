@@ -10,8 +10,6 @@ class FileNamer implements NamerInterface
 {
     public function name(FileInterface $file)
     {
-        $date = new \DateTime();
-
-        return (floor($date->getTimestamp()/10)).'.'.$file->getExtension();
+        return $_REQUEST['uniqueFileName'];
     }
 }
