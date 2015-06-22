@@ -50,7 +50,7 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
         } else if ($file instanceof ArrayCollection) {
             $data=array();
             foreach ($file as $f) {
-               $data[]=$f->getWebPath();
+                $data[]=$f->getWebPath();
             }
 
             return $data;
@@ -72,27 +72,32 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
         if (count($images)==0) {
             return null;
         } else if (count($images)==1) {
-            $file = new File();
+            $file=$this->om->getRepository('AppBundle:File')->findByPath('uploads/gallery/'.$images[0]->getFilename());
+            if( $file == null){
+                $file = new File();
 
-            $file->setPath('uploads/gallery/'.$images[0]->getFilename());
-            $this->om->persist($file);
+                $file->setPath('uploads/gallery/'.$images[0]->getFilename());
+                $this->om->persist($file);
 
-            $this->om->flush();
-            $data = $file;
+                $this->om->flush();
+            }
+            $data=$file;
 
         } else {
             $data = array();
             foreach ($images as $image) {
-                $file = new File();
+                $file=$this->om->getRepository('AppBundle:File')->findOneByPath('uploads/gallery/'.$image->getFilename());
+                if( $file == null){
+                    $file = new File();
 
-                $file->setPath('uploads/gallery/'.$image->getFilename());
-                $this->om->persist($file);
+                    $file->setPath('uploads/gallery/'.$image->getFilename());
+                    $this->om->persist($file);
 
-
+                    $this->om->flush();
+                }
                 $data[]=$file;
             }
             $this->om->flush();
-
         }
 
         return $data;
