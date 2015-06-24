@@ -12,44 +12,47 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 trait HasFileTrait
 {
     /**
-     * Track preUpdate File
-     * @param PreUpdateEventArgs $event
-     *
-     * @ORM\PreUpdate
+     * Obtiene el nombre de la clase(teniendo en cuenta el namespace)
+     * @return string
      */
-    public function trackPreUpdateFile(PreUpdateEventArgs $event)
+    public function getClassName()
     {
-        if ($event->hasChangedField('file') ) {
-            $this->previousFile = $this->file;
-        }
+        $reflect = new \ReflectionClass($this);
 
+        return $reflect->getName();
     }
+
     /**
-     * Funcion que elimina las entidades de tipo file que se eliminan
-     * @param LifecycleEventArgs $event
-     *
-     * @ORM\PostUpdate
+     * Obtiene el nombre de la clase(teniendo en cuenta el namespace)
+     * @return string
      */
-    public function removeUnusedFile(LifecycleEventArgs $event)
+    public function getShortClassName()
     {
-        if (!empty($this->previousFile)) {
-            $em = $event->getEntityManager();
-            $reflect = new \ReflectionClass($this);
-            $class=$reflect->getShortName();
-            $files= null;
-            eval("\$files = \$em->getRepository('AppBundle:File')->findBy".$class."(\$this);");
-            if ($files!=null) {
-                foreach ($files as $file) {
-                    if ($this->file!=$file) {
-                        $em->remove($file);
-                        $em->flush($file);
-                    }
-                }
-            }
-            eval("\$this->file->set".$class."(\$this);");
-            $em->persist($this->file);
-            $em->flush($this->file);
-        }
+        $reflect = new \ReflectionClass($this);
+
+        return $reflect->getShortName();
+    }
+
+
+    /**
+     * Obtiene el nombre de la clase(teniendo en cuenta el namespace)
+     * @return string
+     */
+    public function getNamespace()
+    {
+        $reflect = new \ReflectionClass($this);
+
+        return $reflect->getNamespaceName();
+    }
+
+
+    /**
+     * Obtiene el nombre de la clase(teniendo en cuenta el namespace)
+     * @return string
+     */
+    public function getReflectionClass()
+    {
+        return new \ReflectionClass($this);
     }
 
     /**
@@ -60,29 +63,12 @@ trait HasFileTrait
      */
     public function addNewFile(LifecycleEventArgs $event)
     {
-        if ($this->file != null){
+        if ($this->file != null) {
             $em = $event->getEntityManager();
             $reflect = new \ReflectionClass($this);
             $class=$reflect->getShortName();
             eval("\$this->file->set".$class."(\$this);");
             $em->persist($this->file);
-            $em->flush($this->file);
-
-        }
-    }
-
-
-    /**
-     * @param LifecycleEventArgs $event
-     *
-     * @ORM\PreRemove
-     */
-    public function removeFile(LifecycleEventArgs $event)
-    {
-        if ($this->file != null) {
-            $em = $event->getEntityManager();
-            $em->remove($this->file);
-            $this->file=null;
             $em->flush($this->file);
         }
     }
