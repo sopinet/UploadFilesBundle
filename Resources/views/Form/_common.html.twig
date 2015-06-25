@@ -2,21 +2,19 @@
 {% if maxFiles is defined %}
     <script type="application/javascript">
         jQuery.getScript( "{{ asset('bundles/sopinetuploadfiles/js/dropzone.js') }}", function() {
-            $('[name={{ form.parent.vars.name }}]').on("submit", function() {
-                var input = $("<input>")
-                        .attr("type", "hidden")
-                        .attr("name", "entity").val("{{ form.parent.vars.value.id }}");
-                $('[name={{ form.parent.vars.name }}]').append($(input));
-                var input = $("<input>")
-                        .attr("type", "hidden")
-                        .attr("name", "entityNamespace").val("{{ form.parent.vars.value.Namespace }}".replace('\\','\\\\'));
-                $('[name={{ form.parent.vars.name }}]').append($(input));
-                var input = $("<input>")
-                        .attr("type", "hidden")
-                        .attr("name", "entityClass").val("{{ form.parent.vars.value.shortClassName|escape('js') }}");
-                $('[name={{ form.parent.vars.name }}]').append($(input));
-
-            });
+            var form = $('[name={{ form.parent.vars.name }}]').length>0 ? $('[name={{ form.parent.vars.name }}]') : $('body > div.wrapper > div > section.content > div > form');
+            var input = $("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "entity").val("{{ form.parent.vars.value.id }}");
+            form.append($(input));
+            var input = $("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "entityNamespace").val("{{ form.parent.vars.value.Namespace }}".replace('\\','\\\\'));
+            form.append($(input));
+            var input = $("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "entityClass").val("{{ form.parent.vars.value.shortClassName|escape('js') }}");
+            form.append($(input));
             Dropzone.autoDiscover = false;
             $('.dropzone').dropzone(
                     {
