@@ -68,19 +68,21 @@
     {% endblock %}
 
     {% block pdf_preview %}
-        {% if form.parent.vars.value.file is defined and form.parent.vars.value.file is not null%}
-            <object data="{{ asset(form.parent.vars.value.file.path) }}" type="application/pdf" {{ block('widget_attributes') }} >
-                <embed src="{{ asset(form.parent.vars.value.file.path) }}" type="application/pdf">&nbsp; </embed>
+        {% set object = attribute(form.parent.vars.value, form.vars.name) %}
+        {% set simple = (object.getPath is defined) %}
+        {% if object and object is not null and simple %}
+            <object data="{{ asset(object.path) }}" type="application/pdf" {{ block('widget_attributes') }} >
+                <embed src="{{ asset(object.path) }}" type="application/pdf">&nbsp; </embed>
                     {# Alternativa para navegadores no compatibles con objetos .pdf se utilizan los servicios de google doc#}
-                    alt :<iframe src="http://docs.google.com/gview?url={{ asset(form.parent.vars.value.file.path,null,true) }}&embedded=true"
+                    alt :<iframe src="http://docs.google.com/gview?url={{ asset(object.path, null, true) }}&embedded=true"
                 {{ block('widget_attributes') }}  frameborder="0"></iframe>
             </object>
-        {% elseif form.parent.vars.value.files is defined %}
-            {% for file in form.parent.vars.value.files %}
-                <object data="{{ asset(form.parent.vars.value.file.path) }}" type="application/pdf" {{ block('widget_attributes') }} >
-                    <embed src="{{ asset(form.parent.vars.value.file.path) }}" type="application/pdf">&nbsp; </embed>
+        {% elseif object is defined and not simple %}
+            {% for file in object %}
+                <object data="{{ asset(file.path) }}" type="application/pdf" {{ block('widget_attributes') }} >
+                    <embed src="{{ asset(file.path) }}" type="application/pdf">&nbsp; </embed>
                     {# Alternativa para navegadores no compatibles con objetos .pdf se utilizan los servicios de google doc#}
-                    alt :<iframe src="http://docs.google.com/gview?url={{ asset(form.parent.vars.value.file.path,null,true) }}&embedded=true"
+                    alt :<iframe src="http://docs.google.com/gview?url={{ asset(file.path, null, true) }}&embedded=true"
                     {{ block('widget_attributes') }} frameborder="0"></iframe>
             {% endfor %}
         {% endif %}

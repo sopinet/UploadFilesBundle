@@ -2,28 +2,28 @@
 {% block field %}
     {{ block('sonata_uploadfile_'~attribute(admin, field_description.name~'UploadType')|default('default')) }}
 {% endblock %}
-
      {% block sonata_uploadfile_default %}
          {% spaceless %}
              <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/sopinetuploadfiles/css/dropzone.css') }}" />
              {% set maxFiles=1 %}
-             {% if object.file is not null %}
-                 <div class="dropzone dropzone-{{ object.file.id }}">
+             {% set file = attribute(object, field_description.name) %}
+             {% if file is not null %}
+                 <div class="dropzone dropzone-{{ file.id }}">
                  </div>
                  <script type="application/javascript">
                      jQuery.getScript( "{{ asset('bundles/sopinetuploadfiles/js/dropzone.js') }}", function() {
                          Dropzone.autoDiscover = false;
-                         $('.dropzone-{{ object.file.id }}').attr('action',"{{ oneup_uploader_endpoint("gallery") }}");
-                         $('.dropzone-{{ object.file.id }}').css('pointer-events',"none");
-                         $('.dropzone-{{ object.file.id }}').dropzone(
+                         $('.dropzone-{{ file.id }}').attr('action',"{{ oneup_uploader_endpoint("gallery") }}");
+                         $('.dropzone-{{ file.id }}').css('pointer-events',"none");
+                         $('.dropzone-{{ file.id }}').dropzone(
                                  {
                                      maxFiles: "{{ maxFiles }}",
                                      addRemoveLinks: false,
                                      init: function () {
-                                         {% if object.file is not null and object.file.getPath() is not null%}
-                                         var mockFile = {name: "{{ object.file.name }}", size: 12345, type: 'image/jpeg', id: '{{ object.file.id }}'};
+                                         {% if file is not null and file.getPath() is not null%}
+                                         var mockFile = {name: "{{ file.name }}", size: 12345, type: 'image/jpeg', id: '{{ file.id }}'};
                                          this.addFile.call(this, mockFile);
-                                         this.options.thumbnail.call(this, mockFile, "{{ asset(object.file.getPath()) }}");
+                                         this.options.thumbnail.call(this, mockFile, "{{ asset(file.getPath()) }}");
                                          {% endif %}
 
                                      }
@@ -36,11 +36,12 @@
      {% endblock %}
 
      {% block sonata_uploadfile_pdf %}
-         {% if object.file is not null and object.file.getPath() is not null %}
-             <object data="{{ asset(object.file.path) }}" type="application/pdf">
-                 <embed src="{{ asset(object.file.path) }}" type="application/pdf">&nbsp; </embed>
+         {% set file = attribute(object, field_description.name) %}
+         {% if file is not null and file.getPath() is not null %}
+             <object data="{{ asset(file.path) }}" type="application/pdf">
+                 <embed src="{{ asset(file.path) }}" type="application/pdf">&nbsp; </embed>
                  {# Alternativa para navegadores no compatibles con objetos .pdf se utilizan los servicios de google doc#}
-                 alt :<iframe src="http://docs.google.com/gview?url={{ asset( object.file.path ,null,true) }}&embedded=true"  frameborder="0"></iframe>
+                 alt :<iframe src="http://docs.google.com/gview?url={{ asset( file.path ,null,true) }}&embedded=true"  frameborder="0"></iframe>
              </object>
          {% endif %}
      {% endblock %}
