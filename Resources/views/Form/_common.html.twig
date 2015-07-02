@@ -50,7 +50,7 @@
                             });
                             {% endif %}
                             this.on("sending", function(file, request, formData) {
-                                uniqueId=Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1)+'.'+file.name.split('.').pop();
+                                uniqueId = {{ form.vars.name }} + '_' + Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1) + '.' + file.name.split('.').pop();
                                 if( typeof file.previousAdded === 'undefined' && !file.previousAdded) {
                                     file.name = uniqueId;
                                     file.removeName = uniqueId;
