@@ -26,14 +26,19 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
      */
     private $orphanageManager;
 
+    private $fieldName;
+    private $mappedBy;
+
     /**
      * @param ObjectManager $om
      * @param OrphanageManager $orphanageManager
      */
-    public function __construct(ObjectManager $om, OrphanageManager $orphanageManager)
+    public function __construct(ObjectManager $om, OrphanageManager $orphanageManager, $fieldName, $mappedBy)
     {
         $this->om = $om;
         $this->orphanageManager = $orphanageManager;
+        $this->fieldName = $fieldName;
+        $this->mappedBy = $mappedBy;
     }
 
     /**
@@ -63,30 +68,30 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
      *
      * @throws TransformationFailedException if object (issue) is not found.
      */
-    public function reverseTransform($id)
+    public function reverseTransform($fields)
     {
         // Pasar los ficheros almacenados en la sesión a la carpeta web y devolver el array de ficheros
-        $manager = $this->orphanageManager->get('gallery');
-        $images = $manager->uploadFiles();
         $entityNamespace=str_replace('Entity', '', $_REQUEST['entityNamespace']);
         $entity= $this->om->getRepository($entityNamespace.':'.$_REQUEST['entityClass'])->find($_REQUEST['entity']);
         if ($entity == null) {
             $className=$this->om->getRepository($entityNamespace.':'.$_REQUEST['entityClass'])->getClassName();
             $entity = new $className();
         }
+        $multiple=$this->isCollection($entity);
+        $images= $this->getImages();
         //si no hay ficheros subidos
         if (count($images)==0) {
             if ($entity != null) {
                 //Se crea la entidad dependiendo del tipo de relacion que tenga con el fichero
-                if ($entity->getReflectionClass()->hasMethod('getFile')) {
-                    $this->om->remove($entity->getFile());
-                    $entity->setFile(null);
+                if (!$multiple && $this->invokeMethod($entity, 'get')!=null) {
+                    $this->om->remove($this->invokeMethod($entity, 'get'));
+                    $this->invokeMethod($entity, 'set', false, null);
                     $this->om->persist($entity);
                     $this->om->flush();
-                } elseif ($entity->getReflectionClass()->hasMethod('getFiles')) {
-                    foreach ($entity->getFiles() as $file) {
+                } elseif ($multiple) {
+                    foreach ($this->invokeMethod($entity, 'get', $multiple) as $file) {
                         $this->om->remove($file);
-                        $entity->removeFile($file);
+                        $this->invokeMethod($entity, 'remove', $multiple, $file);
                         $this->om->persist($entity);
                         $this->om->flush();
                     }
@@ -100,16 +105,19 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
             //Obtenemos la entidad de tipo file si existe o creamos una nueva
             if ( $file == null) {
                 //Se crea la entidad dependiendo del tipo de relacion que tenga con el fichero
-                if ($entity->getReflectionClass()->hasMethod('getFile')) {
+                if (!$multiple) {
                     $file = $this->createSingleFile($entity, $images[0]);
-                } elseif ($entity->getReflectionClass()->hasMethod('getFiles')) {
+                } elseif ($multiple) {
                     $file = $this->createMultipleFiles($entity, $images);
                 }
-            }
-            if ($entity->getReflectionClass()->hasMethod('getFile')) {
                 $data = $file;
-            } elseif ($entity->getReflectionClass()->hasMethod('getFiles')) {
-                $data = array($file);
+            } else {
+                if ($multiple) {
+                    $data = array($file);
+                } else {
+                    $data = $file;
+                }
+
             }
         } else {
             $data = array();
@@ -119,30 +127,30 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
                 if ( $file == null ) {
                     // Se obtiene la entidad relacionada con los ficheros
                     $entity= $this->om->getRepository($entityNamespace.':'.$_REQUEST['entityClass'])->find($_REQUEST['entity']);
-                    if ($entity ==null) {
+                    if ($entity == null) {
                         $className=$this->om->getRepository($entityNamespace.':'.$_REQUEST['entityClass'])->getClassName();
                         $entity =new $className();
                     }
                     //Se crea la entidad dependiendo del tipo de relacion que tenga con el fichero
-                    if ($entity->getReflectionClass()->hasMethod('getFile')) {
+                    if (!$multiple) {
                         $data = $this->createSingleFile($entity, $images[0]);
-                    } elseif ($entity->getReflectionClass()->hasMethod('getFiles')) {
+                    } elseif ($multiple) {
                         $data = $this->createMultipleFiles($entity, $images);
                     }
                     break;
                 }
                 //borramos los ficheros que ya no sirven
-                if ($entity->getReflectionClass()->hasMethod('getFiles')) {
-                    $files=$entity->getFiles();
+                if ($multiple) {
+                    $files=$this->invokeMethod($entity, 'get', true);
                     foreach ($files as $file) {
                         if (!in_array($file, $data)) {
-                            $entity->removeFile($file);
+                            $this->invokeMethod($entity, 'remove', true, $file);
                             $this->om->remove($file);
                         }
                     }
                     $this->om->flush();
                 }
-                $data[]=$file;
+                $data=$file;
             }
 
         }
@@ -167,15 +175,14 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
             return $file;
         }
         $file = new File();
-        $entity= $this->om->getRepository($entityNamespace.':'.$_REQUEST['entityClass'])->find($_REQUEST['entity']);
-        if ($entity->getFile()!=null) {
-            $this->om->remove($entity->getFile());
-            $entity->setFile(null);
+        if ($this->invokeMethod($entity, 'get')!=null) {
+            $this->om->remove($this->invokeMethod($entity, 'get'));
+            $this->invokeMethod($entity, 'set', false, null);
             $this->om->flush();
         }
         $file->setPath('uploads/gallery/'.$image->getFilename());
-        eval("\$file->set".$_REQUEST['entityClass']."(\$entity);");
-        $entity->setFile($file);
+        eval("\$file->set".$this->getInversedBy()."(\$entity);");
+        $this->invokeMethod($entity, 'set', false, $file);
         $this->om->persist($file);
         $this->om->persist($entity);
         $this->om->flush();
@@ -212,13 +219,13 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
         }
         $this->om->flush();
 
-        $files=$entity->getFiles();
+        $files=$this->invokeMethod($entity, 'get', true);
 
         //Asociamos los nuevos ficheros con la entidad
         foreach ($data as $new) {
             if (!in_array($new, $files->toArray())) {
-                $entity->addFile($new);
-                eval("\$new->set".$_REQUEST['entityClass']."(\$entity);");
+                $this->invokeMethod($entity, 'add', true, $new);
+                eval("\$new->set".$this->getInversedBy()."(\$entity);");
                 $this->om->persist($new);
             }
         }
@@ -226,5 +233,75 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
         $this->om->flush();
 
         return $data;
+    }
+
+    /**
+     * Check if the fields is a collection
+     * @param $entity
+     * @return mixed
+     */
+    private function isCollection($entity)
+    {
+        $reflectionClass=$entity->getReflectionClass();
+
+        return $reflectionClass->hasMethod('add'.$this->prepareString($this->fieldName));
+    }
+
+    /**
+     * @param $fieldname
+     * @return string
+     */
+    private function prepareString($fieldname)
+    {
+        $field=ucfirst($fieldname);
+
+        return substr($field, 0, strlen($field) - 1);
+    }
+
+    /**
+     * Invoke a method for the entity field with some parameters
+     * @param $entity
+     * @param $string
+     * @param bool $collection
+     * @param null $parameters
+     * @return mixed
+     */
+    private function invokeMethod($entity, $string, $collection=false ,$parameters=null)
+    {
+        $reflectionClass = $entity->getReflectionClass();
+        //Se prepara el nombre del campo
+        $string= ($collection && $string!='get') ? $string.$this->prepareString($this->fieldName) : $string.ucfirst($this->fieldName);
+        /** @var \ReflectionClass $reflectionClass */
+        $method = $reflectionClass->getMethod($string);
+        /** @var \ReflectionMethod $method */
+        $data=$method->invoke($entity, $parameters);
+
+        return $data;
+    }
+
+    /**
+     * Obtiene las imagenes de la cache asociadas al campo correspondiente
+     * @return array
+     */
+    private function getImages()
+    {
+        $manager = $this->orphanageManager->get('gallery');
+        $images = $manager->getFiles();
+        $clone = clone $images;
+        $data=array();
+        foreach ($images as $image) {
+            if (explode('_', $image->getFilename())[0]==$this->fieldName) {
+                $data[]=$image;
+                $clone->files()->name($image);
+                $manager->uploadFiles(array($image));
+            }
+        }
+
+        return $data;
+    }
+
+    private function getInversedBy()
+    {
+        return $this->mappedBy== 'default'? $_REQUEST['entityClass']: ucfirst($this->mappedBy);
     }
 }

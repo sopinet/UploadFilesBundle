@@ -23,7 +23,7 @@ trait HasFileTrait
     }
 
     /**
-     * Obtiene el nombre de la clase(teniendo en cuenta el namespace)
+     * Obtiene el nombre de la clase(no teniendo en cuenta el namespace)
      * @return string
      */
     public function getShortClassName()
