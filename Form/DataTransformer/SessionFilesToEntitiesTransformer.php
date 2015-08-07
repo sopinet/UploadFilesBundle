@@ -26,7 +26,13 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
      */
     private $orphanageManager;
 
+    /**
+     * @var String
+     */
     private $fieldName;
+    /**
+     * @var String
+     */
     private $mappedBy;
 
     /**
@@ -64,7 +70,7 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
     }
 
     /**
-     * Transforms a collection os files on session on entities
+     * Transforms a files collection on session on entities
      *
      * @throws TransformationFailedException if object (issue) is not found.
      */
@@ -82,17 +88,17 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
         //si no hay ficheros subidos
         if (count($images)==0) {
             if ($entity != null) {
-                //Se crea la entidad dependiendo del tipo de relacion que tenga con el fichero
+                //Se updatea la entidad dependiendo del tipo de relacion que tenga con el fichero
                 if (!$multiple && $this->invokeMethod($entity, 'get')!=null) {
+                    //se elimina el fichero
                     $this->om->remove($this->invokeMethod($entity, 'get'));
                     $this->invokeMethod($entity, 'set', false, null);
-                    $this->om->persist($entity);
                     $this->om->flush();
                 } elseif ($multiple) {
+                    //se eliminan todos los ficheros
                     foreach ($this->invokeMethod($entity, 'get', $multiple) as $file) {
                         $this->om->remove($file);
                         $this->invokeMethod($entity, 'remove', $multiple, $file);
-                        $this->om->persist($entity);
                         $this->om->flush();
                     }
                 }
@@ -159,7 +165,7 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
     }
 
     /**
-     * Crea una entidad file con una relacionada (1 a 1) con la entidad
+     * Crea una entidad file relacionada (1 a 1) con la entidad
      * @param $entity
      * @param $file
      * @return File
@@ -184,7 +190,6 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
         eval("\$file->set".$this->getInversedBy()."(\$entity);");
         $this->invokeMethod($entity, 'set', false, $file);
         $this->om->persist($file);
-        $this->om->persist($entity);
         $this->om->flush();
 
         return $file;
