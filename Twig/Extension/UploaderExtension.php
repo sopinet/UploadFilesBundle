@@ -56,6 +56,10 @@ class UploaderExtension extends \Twig_Extension
         #ToDO prueba de concepto sacar a un servicio
         $manager = $this->orphanManager->get('gallery');
         $fs = new Filesystem();
+        // Check file exists
+        if (!file_exists($file->getAbsolutePath())) {
+                return false;
+        }
         $fs->copy($file->getAbsolutePath(), $this->config['directory'].'/'.$this->session->getId().'/gallery/'.$file->getName());
     }
 }
