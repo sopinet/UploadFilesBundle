@@ -94,7 +94,7 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
                     $this->om->remove($this->invokeMethod($entity, 'get'));
                     $this->invokeMethod($entity, 'set', false, null);
                     $this->om->flush();
-                } elseif ($multiple) {
+                } elseif ($multiple && $this->invokeMethod($entity, 'get', $multiple)!=null) {
                     //se eliminan todos los ficheros
                     foreach ($this->invokeMethod($entity, 'get', $multiple) as $file) {
                         $this->om->remove($file);
