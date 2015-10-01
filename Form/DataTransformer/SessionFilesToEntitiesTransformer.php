@@ -105,7 +105,7 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
             }
 
             return null;
-            //En caso de que la relacion sea 1 a 1
+            //En caso de que la relacion solo se haya subido un fichero
         } else if (count($images)==1) {
             $file=$this->om->getRepository('AppBundle:File')->findOneByPath('uploads/gallery/'.$images[0]->getFilename());
             //Obtenemos la entidad de tipo file si existe o creamos una nueva
@@ -120,6 +120,17 @@ class SessionFilesToEntitiesTransformer implements DataTransformerInterface
             } else {
                 if ($multiple) {
                     $data = array($file);
+                    //borramos los ficheros que ya no sirven
+                    if ($multiple) {
+                        $files=$this->invokeMethod($entity, 'get', true);
+                        foreach ($files as $file) {
+                            if (!in_array($file, $data)) {
+                                $this->invokeMethod($entity, 'remove', true, $file);
+                                $this->om->remove($file);
+                            }
+                        }
+                        $this->om->flush();
+                    }
                 } else {
                     $data = $file;
                 }
