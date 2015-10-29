@@ -11,6 +11,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Oneup\UploaderBundle\Templating\Helper\UploaderHelper;
 use Oneup\UploaderBundle\Uploader\Orphanage\OrphanageManager;
 use Sopinet\UploadFilesBundle\Form\DataTransformer\SessionFilesToEntitiesTransformer;
+use Sopinet\UploadFilesBundle\Service\FileHelper;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormView;
@@ -33,16 +34,22 @@ class DropzoneType extends AbstractType
      */
     private $objectManager;
 
-    public function __construct(UploaderHelper $uploaderHelper, ObjectManager $objectManager, OrphanageManager $orphanageManager)
+    /**
+     * @var FileHelper
+     */
+    private $fileHelper;
+
+    public function __construct(UploaderHelper $uploaderHelper, ObjectManager $objectManager, OrphanageManager $orphanageManager, FileHelper $fileHelper)
     {
         $this->uploaderHelper = $uploaderHelper;
         $this->orphanageManager = $orphanageManager;
         $this->objectManager = $objectManager;
+        $this->fileHelper= $fileHelper;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $transformer = new SessionFilesToEntitiesTransformer($this->objectManager, $this->orphanageManager, $builder->getName(), $options['mappedBy']);
+        $transformer = new SessionFilesToEntitiesTransformer($this->objectManager, $this->orphanageManager, $this->fileHelper, $builder->getName(), $options['mappedBy']);
         $builder->addModelTransformer($transformer);
     }
 

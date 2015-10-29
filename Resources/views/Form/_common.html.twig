@@ -1,22 +1,23 @@
 {{ sopinet_file_upload_cache_clear(form.vars.name) }}
+{% trans_default_domain form.vars.translation_domain|default('messages') %}
 {% if maxFiles is defined %}
     {% set object = attribute(form.parent.vars.value, form.vars.name) %}
     {% set simple = (object.getPath is defined) %}
     <script type="application/javascript">
         jQuery.getScript( "{{ asset('bundles/sopinetuploadfiles/js/dropzone.js') }}", function() {
             var form = $('[name={{ form.parent.vars.name }}]').length>0 ? $('[name={{ form.parent.vars.name }}]') : $('body > div.wrapper > div > section.content > div > form');
-                            var input = $("<input>")
-                        .attr("type", "hidden")
-                        .attr("name", "entity").val("{{ form.parent.vars.value.id }}");
-                form.append($(input));
-                var input = $("<input>")
-                        .attr("type", "hidden")
-                        .attr("name", "entityNamespace").val("{{ form.parent.vars.value.Namespace }}".replace('\\','\\\\'));
-                form.append($(input));
-                var input = $("<input>")
-                        .attr("type", "hidden")
-                        .attr("name", "entityClass").val("{{ form.parent.vars.value.shortClassName|escape('js') }}");
-                form.append($(input));
+            var input = $("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "entity").val("{{ form.parent.vars.value.id }}");
+            form.append($(input));
+            var input = $("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "entityNamespace").val("{{ form.parent.vars.value.Namespace }}".replace('\\','\\\\'));
+            form.append($(input));
+            var input = $("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "entityClass").val("{{ form.parent.vars.value.shortClassName|escape('js') }}");
+            form.append($(input));
             Dropzone.autoDiscover = false;
             $('#{{ form.vars.id }}').dropzone(
                     {
@@ -66,24 +67,24 @@
 
                             {# Añadimos los ficheros #}
                             {% if object is defined and object is not null and not simple %}
-                                {% for file in object %}
-                                    {{ sopinet_file_upload_load_on_cache(file) }}
-                                    var mockFile = {name: "{{ file.name }}", size: 12345, type: 'image/jpeg' , id: '{{ file.id }}'};
-                                    this.addFile.call(this, mockFile);
-                                    this.options.thumbnail.call(this, mockFile, "{{ asset(file.path) }}");
-                                    {# Guardamos sus nombres para la peticion de borrado #}
-                                    this.files[this.files.length-1].removeName="{{ file.name }}";
-                                    this.files[this.files.length-1].previousAdded=true;
-                                {% endfor %}
+                            {% for file in object %}
+                            {{ sopinet_file_upload_load_on_cache(file) }}
+                            var mockFile = {name: "{{ file.name }}", size: 12345, type: 'image/jpeg' , id: '{{ file.id }}'};
+                            this.addFile.call(this, mockFile);
+                            this.options.thumbnail.call(this, mockFile, "{{ asset(file.path) }}");
+                            {# Guardamos sus nombres para la peticion de borrado #}
+                            this.files[this.files.length-1].removeName="{{ file.name }}";
+                            this.files[this.files.length-1].previousAdded=true;
+                            {% endfor %}
                             {% elseif object is defined and object is not null and simple %}
-                                {% set file = object %}
-                                {{ sopinet_file_upload_load_on_cache(file) }}
-                                var mockFile = {name: "{{ file.name }}", size: 12345, type: 'image/jpeg' , id: '{{ file.id }}'};
-                                this.addFile.call(this, mockFile);
-                                this.options.thumbnail.call(this, mockFile, "{{ asset(file.path) }}");
-                                {# Guardamos sus nombres para la peticion de borrado #}
-                                this.files[this.files.length-1].removeName="{{ file.name }}";
-                                this.files[this.files.length-1].previousAdded=true;
+                            {% set file = object %}
+                            {{ sopinet_file_upload_load_on_cache(file) }}
+                            var mockFile = {name: "{{ file.name }}", size: 12345, type: 'image/jpeg' , id: '{{ file.id }}'};
+                            this.addFile.call(this, mockFile);
+                            this.options.thumbnail.call(this, mockFile, "{{ asset(file.path) }}");
+                            {# Guardamos sus nombres para la peticion de borrado #}
+                            this.files[this.files.length-1].removeName="{{ file.name }}";
+                            this.files[this.files.length-1].previousAdded=true;
                             {% endif %}
                         }
                     }

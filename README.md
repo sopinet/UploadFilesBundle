@@ -52,10 +52,7 @@ https://github.com/1up-lab/OneupUploaderBundle/blob/master/Resources/doc/orphana
 ```
 <?php
 /**
- * Created by PhpStorm.
- * User: hud
- * Date: 20/05/15
- * Time: 9:56
+ * Example File Entity from https://github.com/sopinet/uploadfiles-bundle
  */
 namespace AppBundle\Entity;
 
@@ -133,7 +130,7 @@ class File
             ? null
             : $this->getUploadDir().'/'.$this->path;
     }
-re
+
     public function getFrontPath()
     {
         return null === $this->path

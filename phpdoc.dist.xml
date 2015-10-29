@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+    <title>uploadfiles-bundle</title>
+    <parser>
+        <target>Resources/docs/phpdocs/output</target>
+        <extensions>
+            <extension>module</extension>
+            <extension>inc</extension>
+            <extension>php</extension>
+        </extensions>
+    </parser>
+    <transformer>
+        <target>Resources/docs/phpdocs/docs</target>
+    </transformer>
+    <files>
+        <ignore>tests/*</ignore>
+        <ignore>Tests/*</ignore>
+        <directory>.</directory>
+    </files>
+    <transformations>
+        <template name="clean"/>
+        <template name="checkstyle"/>
+    </transformations>
+</phpdoc>

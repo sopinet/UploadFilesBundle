@@ -4,7 +4,7 @@ services:
 #        arguments: [@service_id, "plain_value", %parameter%]
    sopinet_upload.form.type.dropzone_type:
         class: Sopinet\UploadFilesBundle\Form\Type\DropzoneType
-        arguments: ["@oneup_uploader.templating.uploader_helper", "@doctrine.orm.entity_manager" ,"@oneup_uploader.orphanage_manager"]
+        arguments: ["@oneup_uploader.templating.uploader_helper", "@doctrine.orm.entity_manager" ,"@oneup_uploader.orphanage_manager", "@sopinet_upload.filehelper"]
         tags:
             - { name: form.type, alias: dropzone_file_gallery }
    sopinet_upload.twig.uploader_extension:
@@ -15,3 +15,7 @@ services:
 
    sopinet_upload.file_namer:
         class: Sopinet\UploadFilesBundle\Service\FileNamer
+
+   sopinet_upload.filehelper:
+        class: Sopinet\UploadFilesBundle\Service\FileHelper
+        arguments: ["@service_container"]
