@@ -71,10 +71,9 @@ trait HasFilesTrait
         $em = $event->getEntityManager();
         $reflect = new \ReflectionClass($this);
         $class=$reflect->getShortName();
-
-        if ($this->getFiles() != null) {
+        if ($this->getFiles() != null ){
             foreach ($this->getFiles() as $file) {
-                eval("\$file->set" . $class . "(\$this);");
+                eval("\$file->set".$class."(\$this);");
                 $em->persist($file);
                 $em->flush($file);
             }

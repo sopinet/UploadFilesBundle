@@ -289,6 +289,8 @@ class OilType extends AbstractType
         ->add('files', 'dropzone_file_gallery', array(
           'maxFiles'=> 4,//default 8
           'required' => false
+          //if the name of mappedBy attribute is different for the className use this:
+          //'mappedBy'=>'mappedByAttributeName'
         ))
 ...
 ```
