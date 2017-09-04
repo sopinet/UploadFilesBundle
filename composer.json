@@ -15,7 +15,7 @@
   ],
   "require": {
     "php": ">=5.4.0",
-    "oneup/uploader-bundle": "1.3.1"
+    "oneup/uploader-bundle":  "dev-release-1.4.0"
   },
   "autoload": {
     "psr-0": { "Sopinet\\UploadFilesBundle": "" }
