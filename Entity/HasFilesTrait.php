@@ -13,65 +13,51 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
  */
 trait HasFilesTrait
 {
-    /**
-     * Track preUpdate File
-     * @param PreUpdateEventArgs $event
-     *
-     * @ORM\PreUpdate
-     */
-    public function trackPreUpdateFiles(PreUpdateEventArgs $event)
-    {
-        if ($event->hasChangedField('files') ) {
-            $this->previousFiles = $this->files;
-        }
 
-    }
     /**
-     * Funcion que elimina las entidades de tipo file que se eliminan
-     * @param LifecycleEventArgs $event
-     *
-     * @ORM\PostUpdate
+     * Obtiene el nombre de la clase(teniendo en cuenta el namespace)
+     * @return string
      */
-    public function removeUnusedFile(LifecycleEventArgs $event)
+    public function getClassName()
     {
         $reflect = new \ReflectionClass($this);
-        $class=$reflect->getShortName();
-        $em = $event->getEntityManager();
-        $files=null;
-        if ($this->files) {
-            foreach ($this->files as $file) {
-                eval("\$file->set".$class."(\$this);");
-                $em->persist($file);
-                $em->flush($file);
-            }
-        }
-        eval("\$files = \$em->getRepository('AppBundle:File')->findBy".$class."(\$this);");
-        if ($files!=null) {
-            foreach ($files as $file) {
-                if ($this->files==null) {
-                    $em->remove($file);
-                    $em->flush($file);
-                } elseif(!in_array($file, $this->files->toArray())) {
-                    $em->remove($file);
-                    $em->flush($file);
-                }
-            }
-        }
 
-        $this->previousFiles = false;
+        return $reflect->getName();
     }
 
-    public function setFiles($files)
+    /**
+     * Obtiene el nombre de la clase(teniendo en cuenta el namespace)
+     * @return string
+     */
+    public function getShortClassName()
     {
-        if ($files instanceof File) {
-            $this->files = array($files);
-        } else {
-            $this->files = $files;
+        $reflect = new \ReflectionClass($this);
 
-        }
-
-        return $this;
+        return $reflect->getShortName();
     }
+
+
+    /**
+     * Obtiene el nombre de la clase(teniendo en cuenta el namespace)
+     * @return string
+     */
+    public function getNamespace()
+    {
+        $reflect = new \ReflectionClass($this);
+
+        return $reflect->getNamespaceName();
+    }
+
+
+    /**
+     * Obtiene el nombre de la clase(teniendo en cuenta el namespace)
+     * @return string
+     */
+    public function getReflectionClass()
+    {
+        return new \ReflectionClass($this);
+    }
+
 
     /**
      * Funcion que añade las entidades de tipo file cuando se crea
@@ -81,15 +67,17 @@ trait HasFilesTrait
      */
     public function addNewFiles(LifecycleEventArgs $event)
     {
+
         $em = $event->getEntityManager();
         $reflect = new \ReflectionClass($this);
         $class=$reflect->getShortName();
-        if ($this->getFiles() != null ){
+        if ($this->getFiles() != null) {
             foreach ($this->getFiles() as $file) {
-                eval("\$file->set".$class."(\$this);");
+                eval("\$file->set" . $class . "(\$this);");
                 $em->persist($file);
                 $em->flush($file);
             }
         }
+
     }
 }

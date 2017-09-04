@@ -3,7 +3,8 @@
         {% spaceless %}
             <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/sopinetuploadfiles/css/dropzone.css') }}" />
             {% set maxFiles=8 %}
-            {% if object.files is not empty %}
+            {% set files = attribute(object, field_description.name) %}
+            {% if files is not empty %}
                 <div class="dropzone dropzone-{{ object.id }}">
                 </div>
                 <script type="application/javascript">
@@ -17,7 +18,7 @@
                                     addRemoveLinks: false,
 
                                     init: function () {
-                                        {% for file in object.files %}
+                                        {% for file in files %}
 
                                             {% if file is not null and file.getPath() is not null%}
                                                 var mockFile = {name: "{{ file.name }}", size: 25000, type: 'image/jpeg', id: '{{ file.id }}'};
