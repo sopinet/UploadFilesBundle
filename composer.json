@@ -1,6 +1,5 @@
 {
   "name": "sopinet/uploadfiles-bundle",
-  "version": "0.0.1",
   "description": "Symfony2 Bundle - File field to facilitate the use of the One Upload Bundle",
   "keywords": ["oneupload", "file","field", "upload", "symfony2", "bundle"],
   "type": "symfony-bundle",

@@ -42,7 +42,7 @@ class DropzoneType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $transformer = new SessionFilesToEntitiesTransformer($this->objectManager, $this->orphanageManager);
+        $transformer = new SessionFilesToEntitiesTransformer($this->objectManager, $this->orphanageManager, $builder->getName(), $options['mappedBy']);
         $builder->addModelTransformer($transformer);
     }
 
@@ -51,7 +51,7 @@ class DropzoneType extends AbstractType
         $resolver->setDefaults(array(
             'attr' => array(
                 'action' => $this->uploaderHelper->endpoint('gallery'),
-                'class' => 'dropzone'
+                'class' => 'dropzone',
             ),
             'maxFiles' => 8,
             'type' => 'form_widget',
@@ -59,7 +59,9 @@ class DropzoneType extends AbstractType
             'btnText' => 'Files',
             'uploaderText' => 'Drop files here to upload',
             'style_type' => 'style_default',
-            'acceptedFiles' => ".jpeg,.jpg,.png,.gif,.JPEG,.JPG,.PNG,.GIF"
+            'acceptedFiles' => ".jpeg,.jpg,.png,.gif,.JPEG,.JPG,.PNG,.GIF",
+            'compound' => 'true',
+            'mappedBy' => 'default'
         ));
     }
 

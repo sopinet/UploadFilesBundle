@@ -35,7 +35,7 @@ class UploaderExtension extends \Twig_Extension
         );
     }
 
-    public function clear()
+    public function clear($fieldName)
     {
         #ToDO prueba de concepto sacar a un servicio
         $manager = $this->orphanManager->get('gallery');
@@ -43,7 +43,11 @@ class UploaderExtension extends \Twig_Extension
         $finder = new Finder();
         if ($fs->exists($this->config['directory'].'/'.$this->session->getId())) {
             $files = $finder->ignoreUnreadableDirs()->in($this->config['directory'].'/'.$this->session->getId());
-            $fs->remove($files);
+            foreach ($files->files() as $image) {
+                if (explode('_', $image->getFilename())[0]==$fieldName) {
+                    $fs->remove($image);
+                }
+            }
         }
     }
 
@@ -52,6 +56,10 @@ class UploaderExtension extends \Twig_Extension
         #ToDO prueba de concepto sacar a un servicio
         $manager = $this->orphanManager->get('gallery');
         $fs = new Filesystem();
+        // Check file exists
+        if (!file_exists($file->getAbsolutePath())) {
+                return false;
+        }
         $fs->copy($file->getAbsolutePath(), $this->config['directory'].'/'.$this->session->getId().'/gallery/'.$file->getName());
     }
 }
