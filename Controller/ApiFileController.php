@@ -48,10 +48,10 @@ class ApiFileController extends FOSRestController {
                 $fs = new Filesystem();
                 $fs->remove($file);
 
-                return $this->get('apihelper')->msgOk();
+                return $this->get('sopinet_apihelperbundle_apihelper')->msgOk();
             }
         }
 
-        return $this->get('apihelper')->msgDenied();
+        return $this->get('sopinet_apihelperbundle_apihelper')->msgDenied();
     }
 } 
