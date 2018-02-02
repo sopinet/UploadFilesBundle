@@ -10,6 +10,25 @@
         {% endstylesheets %}
     {% endblock %}
 
+    {% block style_cropper %}
+        {% stylesheets
+        '@SopinetUploadFilesBundle/Resources/public/css/dropzone.css'
+        '@SopinetUploadFilesBundle/Resources/public/css/cropper.min.css'
+        output='css/*.css' filter='cssrewrite' %}
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}" />
+        {% endstylesheets %}
+    {% endblock %}
+
+    {% block style_rounded_cropper %}
+        {% stylesheets
+        '@SopinetUploadFilesBundle/Resources/public/css/dropzone.css'
+        '@SopinetUploadFilesBundle/Resources/public/css/cropper.min.css'
+        '@SopinetUploadFilesBundle/Resources/public/css/cropper.circle.min.css'
+        output='css/*.css' filter='cssrewrite' %}
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}" />
+        {% endstylesheets %}
+    {% endblock %}
+
     {% block style_icon %}
         {% stylesheets
         '@SopinetUploadFilesBundle/Resources/public/css/dropzone.css'
@@ -23,6 +42,7 @@
     {% endblock %}
 
 {# TYPE BLOCKS#}
+
     {% block icon %}
         <i {{ block('widget_container_attributes') }}>
             {%- if form.parent is empty -%}
@@ -31,6 +51,17 @@
             {{- block('form_rows') -}}
             {{- form_rest(form) -}}
         </i>
+    {% endblock %}
+
+
+    {% block crop %}
+        <div {{ block('widget_container_attributes') }}>
+            {%- if form.parent is empty -%}
+                {{ form_errors(form) }}
+            {%- endif -%}
+            {{- block('form_rows') -}}
+            {{- form_rest(form) -}}
+        </div>
     {% endblock %}
 
     {% block modal %}
@@ -68,31 +99,31 @@
     {% endblock %}
 
     {% block pdf_preview %}
-        {% set object = attribute(form.parent.vars.value, form.vars.name) %}
-        {% set simple = (object.getPath is defined) %}
-        {% if object and object is not null and simple %}
-            <object data="{{ asset(object.path) }}" type="application/pdf" {{ block('widget_attributes') }} >
-                <embed src="{{ asset(object.path) }}" type="application/pdf">&nbsp; </embed>
-                    {# Alternativa para navegadores no compatibles con objetos .pdf se utilizan los servicios de google doc#}
-                    alt :<iframe src="http://docs.google.com/gview?url={{ asset(object.path, null, true) }}&embedded=true"
+    {% set object = attribute(form.parent.vars.value, form.vars.name) %}
+    {% set simple = (object.getPath is defined) %}
+    {% if object and object is not null and simple %}
+    <object data="{{ asset(object.path) }}" type="application/pdf" {{ block('widget_attributes') }} >
+        <embed src="{{ asset(object.path) }}" type="application/pdf">&nbsp; </embed>
+        {# Alternativa para navegadores no compatibles con objetos .pdf se utilizan los servicios de google doc#}
+        alt :<iframe src="http://docs.google.com/gview?url={{ asset(object.path, null, true) }}&embedded=true"
                 {{ block('widget_attributes') }}  frameborder="0"></iframe>
-            </object>
-        {% elseif object is defined and not simple %}
-            {% for file in object %}
-                <object data="{{ asset(file.path) }}" type="application/pdf" {{ block('widget_attributes') }} >
-                    <embed src="{{ asset(file.path) }}" type="application/pdf">&nbsp; </embed>
-                    {# Alternativa para navegadores no compatibles con objetos .pdf se utilizan los servicios de google doc#}
-                    alt :<iframe src="http://docs.google.com/gview?url={{ asset(file.path, null, true) }}&embedded=true"
-                    {{ block('widget_attributes') }} frameborder="0"></iframe>
-            {% endfor %}
-        {% endif %}
+    </object>
+{% elseif object is defined and not simple %}
+        {% for file in object %}
+<object data="{{ asset(file.path) }}" type="application/pdf" {{ block('widget_attributes') }} >
+    <embed src="{{ asset(file.path) }}" type="application/pdf">&nbsp; </embed>
+    {# Alternativa para navegadores no compatibles con objetos .pdf se utilizan los servicios de google doc#}
+    alt :<iframe src="http://docs.google.com/gview?url={{ asset(file.path, null, true) }}&embedded=true"
+            {{ block('widget_attributes') }} frameborder="0"></iframe>
+    {% endfor %}
+    {% endif %}
     {% endblock %}
 
-{# WIDGET COMPOSITION#}
+    {# WIDGET COMPOSITION#}
     {% block dropzone_file_gallery_widget %}
-        {% spaceless %}
-            {{ block(style_type) }}
-            {% include '@SopinetUploadFiles/Form/_common.html.twig' %}
-            {{ block(type) }}
-        {% endspaceless %}
-    {% endblock %}
+    {% spaceless %}
+        {{ block(style_type) }}
+        {% include '@SopinetUploadFiles/Form/_common.html.twig' %}
+        {{ block(type) }}
+    {% endspaceless %}
+{% endblock %}

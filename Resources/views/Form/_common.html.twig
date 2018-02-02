@@ -4,22 +4,27 @@
     {% set object = attribute(form.parent.vars.value, form.vars.name) %}
     {% set simple = (object.getPath is defined) %}
     <script type="application/javascript">
-        jQuery.getScript( "{{ asset('bundles/sopinetuploadfiles/js/dropzone.js') }}", function() {
-            var form = $('[name={{ form.parent.vars.name }}]').length>0 ? $('[name={{ form.parent.vars.name }}]') : $('body > div.wrapper > div > section.content > div > form');
-            var input = $("<input>")
+        {% if form.vars.type=='crop' %}
+        jQuery.getScript( "{{ asset('bundles/sopinetuploadfiles/js/cropper.min.js') }}" ).done(function() {
+            {% else %}
+            jQuery.getScript( "{{ asset('bundles/sopinetuploadfiles/js/dropzone.js') }}", function() {
+                {% endif %}
+                Dropzone.autoDiscover = false;
+                Dropzone.autoDiscover = false;
+                var form = $('[name={{ form.parent.vars.name }}]').length > 0 ? $('[name={{ form.parent.vars.name }}]') : $('body > div.wrapper > div > section.content > div > form');
+                var input = $("<input>")
                     .attr("type", "hidden")
                     .attr("name", "entity").val("{{ form.parent.vars.value.id }}");
-            form.append($(input));
-            var input = $("<input>")
+                form.append($(input));
+                var input = $("<input>")
                     .attr("type", "hidden")
-                    .attr("name", "entityNamespace").val("{{ form.parent.vars.value.Namespace }}".replace('\\','\\\\'));
-            form.append($(input));
-            var input = $("<input>")
+                    .attr("name", "entityNamespace").val("{{ form.parent.vars.value.Namespace }}".replace('\\', '\\\\'));
+                form.append($(input));
+                var input = $("<input>")
                     .attr("type", "hidden")
                     .attr("name", "entityClass").val("{{ form.parent.vars.value.shortClassName|escape('js') }}");
-            form.append($(input));
-            Dropzone.autoDiscover = false;
-            $('#{{ form.vars.id }}').dropzone(
+                form.append($(input));
+                {{ form.vars.id }} = $('#{{ form.vars.id }}').dropzone(
                     {
                         {# Opciones de configuración #}
                         acceptedFiles: "{{ acceptedFiles|default('.jpeg,.jpg,.png,.gif,.JPEG,.JPG,.PNG,.GIF') }}",//"audio/*,image/*,.psd,.pdf"
@@ -34,10 +39,10 @@
                                 if (this.files[1] != null) {
                                     this.removeFile(this.files[0]);
                                 }
-                                if( typeof uniqueId !== 'undefined'){
-                                    this.files[this.files.length-1].removeName=uniqueId;
+                                if (typeof uniqueId !== 'undefined') {
+                                    this.files[this.files.length - 1].removeName = uniqueId;
                                 } else {
-                                    this.files[this.files.length-1].removeName=this.files[this.files.length-1].name;
+                                    this.files[this.files.length - 1].removeName = this.files[this.files.length - 1].name;
                                 }
                             });
                             {% else %}
@@ -45,50 +50,160 @@
                                 if (this.files[{{ maxFiles }}] != null) {
                                     this.removeFile(this.files[0]);
                                 }
-                                if( typeof uniqueId !== 'undefined'){
-                                    file.removeName=uniqueId;
+                                if (typeof uniqueId !== 'undefined') {
+                                    file.removeName = uniqueId;
                                 } else {
-                                    file.removeName=file.name;
+                                    file.removeName = file.name;
                                 }
                             });
                             {% endif %}
-                            this.on("sending", function(file, request, formData) {
+                            this.on("sending", function (file, request, formData) {
                                 uniqueId = '{{ form.vars.name }}' + '_' + Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1) + '.' + file.name.split('.').pop();
-                                if( typeof file.previousAdded === 'undefined' && !file.previousAdded) {
+                                if (typeof file.previousAdded === 'undefined' && !file.previousAdded) {
                                     file.name = uniqueId;
                                     file.removeName = uniqueId;
                                 }
-                                formData.append('uniqueFileName',uniqueId);
+                                formData.append('uniqueFileName', uniqueId);
                             });
                             {# Funcion de borrado #}
-                            this.on("removedfile", function(file){
-                                $.post('{{ path('sopinet_upload_files_delete') }}',{ deleteName: file.removeName});
+                            this.on("removedfile", function (file) {
+                                $.post('{{ path('sopinet_upload_files_delete') }}', {deleteName: file.removeName});
                             });
 
                             {# Añadimos los ficheros #}
                             {% if object is defined and object is not null and not simple %}
                             {% for file in object %}
                             {{ sopinet_file_upload_load_on_cache(file) }}
-                            var mockFile = {name: "{{ file.name }}", size: 12345, type: 'image/jpeg' , id: '{{ file.id }}'};
+                            var mockFile = {
+                                name: "{{ file.name }}",
+                                size: 12345,
+                                type: 'image/jpeg',
+                                id: '{{ file.id }}'
+                            };
                             this.addFile.call(this, mockFile);
                             this.options.thumbnail.call(this, mockFile, "{{ asset(file.path) }}");
                             {# Guardamos sus nombres para la peticion de borrado #}
-                            this.files[this.files.length-1].removeName="{{ file.name }}";
-                            this.files[this.files.length-1].previousAdded=true;
+                            this.files[this.files.length - 1].removeName = "{{ file.name }}";
+                            this.files[this.files.length - 1].previousAdded = true;
                             {% endfor %}
                             {% elseif object is defined and object is not null and simple %}
                             {% set file = object %}
                             {{ sopinet_file_upload_load_on_cache(file) }}
-                            var mockFile = {name: "{{ file.name }}", size: 12345, type: 'image/jpeg' , id: '{{ file.id }}'};
+                            var mockFile = {
+                                name: "{{ file.name }}",
+                                size: 12345,
+                                type: 'image/jpeg',
+                                id: '{{ file.id }}'
+                            };
                             this.addFile.call(this, mockFile);
                             this.options.thumbnail.call(this, mockFile, "{{ asset(file.path) }}");
                             {# Guardamos sus nombres para la peticion de borrado #}
-                            this.files[this.files.length-1].removeName="{{ file.name }}";
-                            this.files[this.files.length-1].previousAdded=true;
+                            this.files[this.files.length - 1].removeName = "{{ file.name }}";
+                            this.files[this.files.length - 1].previousAdded = true;
+                            {% endif %}
+                            {% if form.vars.type=='crop' %}
+                            var dataURItoBlob = function (dataURI) {
+                                var byteString = atob(dataURI.split(',')[1]);
+                                var ab = new ArrayBuffer(byteString.length);
+                                var ia = new Uint8Array(ab);
+                                for (var i = 0; i < byteString.length; i++) {
+                                    ia[i] = byteString.charCodeAt(i);
+                                }
+                                return new Blob([ab], {type: 'image/jpeg'});
+                            };
+                            var c = 0;
+
+                            this.on('success', function (file) {
+                                var $button = $('<a href="#" class="js-open-cropper-modal" data-file-name="' + file.name + '" data-remove-file-name="'+ file.removeName +'">Crop & Upload</a>');
+                                $(file.previewElement).append($button);
+                            });
+
+                            $('#{{ form.vars.id }}').on('click', '.js-open-cropper-modal', function (e) {
+                                e.preventDefault();
+                                var fileName = $(this).data('file-name');
+                                var removeFileName = $(this).data('remove-file-name');
+                                var url = location.protocol + '//' + location.hostname+'/uploads/gallery/' + fileName;
+                                altUrl = location.protocol + '//' + location.hostname+'/upload/files/get/' + removeFileName;
+                                var modalTemplate =
+                                    '<div id="cropper-modal" class="modal fade" tabindex="-1" role="dialog">' +
+                                    '<div class="modal-dialog modal-lg" role="document">' +
+                                    '<div class="modal-content">' +
+                                    '<div class="modal-header">' +
+                                    '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                    '<h4 class="modal-title">Crop</h4>' +
+                                    '</div>' +
+                                    '<div class="modal-body">' +
+                                    '<div class="image-container">' +
+                                    '<img id="img-' + ++c + '" src="'+url+'" onerror="this.onerror=null;this.src=altUrl;">' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '<div class="modal-footer">' +
+                                    '<button type="button" class="btn btn-warning rotate-left"><span class="fa fa-rotate-left"></span></button>' +
+                                    '<button type="button" class="btn btn-warning rotate-right"><span class="fa fa-rotate-right"></span></button>' +
+                                    '<button type="button" class="btn btn-warning scale-x" data-value="-1"><span class="fa fa-arrows-h"></span></button>' +
+                                    '<button type="button" class="btn btn-warning scale-y" data-value="-1"><span class="fa fa-arrows-v"></span></button>' +
+                                    '<button type="button" class="btn btn-warning reset"><span class="fa fa-refresh"></span></button>' +
+                                    '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
+                                    '<button type="button" class="btn btn-primary crop-upload">Crop & upload</button>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '</div>';
+
+                                var $cropperModal = $(modalTemplate);
+
+                                $cropperModal.modal('show').on("shown.bs.modal", function () {
+                                    var cropper = new Cropper(document.getElementById('img-' + c), {
+                                        autoCropArea: 1,
+                                        movable: false,
+                                        cropBoxResizable: true,
+                                        rotatable: true
+                                    });
+                                    var $this = $(this);
+                                    $this
+                                        .on('click', '.crop-upload', function () {
+                                            // get cropped image data
+                                            var blob = cropper.getCroppedCanvas().toDataURL();
+                                            // transform it to Blob object
+                                            var croppedFile = dataURItoBlob(blob);
+                                            croppedFile.name = fileName;
+                                            var dropzone=Dropzone.forElement({{ form.vars.id }}[0]);
+                                            var files = dropzone.getAcceptedFiles();
+                                            for (var i = 0; i < files.length; i++) {
+                                                var file = files[i];
+                                                if (file.name === fileName) {
+                                                    dropzone.removeFile(file);
+                                                }
+                                            }
+
+                                            dropzone.addFile(croppedFile);
+                                            $this.modal('hide');
+                                        })
+                                        .on('click', '.rotate-right', function () {
+                                            cropper.rotate(90);
+                                        })
+                                        .on('click', '.rotate-left', function () {
+                                            cropper.rotate(-90);
+                                        })
+                                        .on('click', '.reset', function () {
+                                            cropper.reset();
+                                        })
+                                        .on('click', '.scale-x', function () {
+                                            var $this = $(this);
+                                            cropper.scaleX($this.data('value'));
+                                            $this.data('value', -$this.data('value'));
+                                        })
+                                        .on('click', '.scale-y', function () {
+                                            var $this = $(this);
+                                            cropper.scaleY($this.data('value'));
+                                            $this.data('value', -$this.data('value'));
+                                        });
+                                });
+                            });
                             {% endif %}
                         }
                     }
-            );
-        });
+                );
+            });
     </script>
 {% endif %}
