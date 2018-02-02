@@ -1,3 +1,7 @@
 sopinet_upload_files_delete:
     path:     /upload/files/delete
     defaults: { _controller: SopinetUploadFilesBundle:ApiFile:deleteFile }
+
+sopinet_upload_session_files_:
+    path:     /upload/files/get/{filename}
+    defaults: { _controller: SopinetUploadFilesBundle:ApiFile:obtainFile }
