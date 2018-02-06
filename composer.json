@@ -3,7 +3,6 @@
   "description": "Symfony2 Bundle - File field to facilitate the use of the One Upload Bundle",
   "keywords": ["oneupload", "file","field", "upload", "symfony2", "bundle"],
   "type": "symfony-bundle",
-  "license": "GPL2",
   "minimum-stability" : "dev",
   "authors": [
     {
